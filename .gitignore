@@ -1,0 +1,11 @@
+# Virtual environment
+venv/
+env/
+
+# Django migration files
+*/migrations/*.pyc
+*/migrations/__pycache__/
+*/migrations/*.py
+
+# Environment settings
+.env
