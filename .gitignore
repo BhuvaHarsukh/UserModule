@@ -9,3 +9,6 @@ env/
 
 # Environment settings
 .env
+
+# Database
+*.sqlite3
