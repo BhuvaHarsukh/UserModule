@@ -21,9 +21,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
-        import bcrypt
-        if 'password' in validated_data:
-            password = validated_data.pop('password')
-            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            instance.password = hashed.decode('utf-8')
-        return super().update(instance, validated_data)
+        password = validated_data.pop('password', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        if password:
+            instance.set_password(password)
+        instance.save()
+        return instance
