@@ -14,7 +14,7 @@ class UserManager(BaseUserManager):
 
         email = self.normalize_email(email)
         user = self.model(cell_number=cell_number, email=email, name=name, role_id=role_id)
-        user.set_password(password)  # This hashes the password
+        user.set_password(password)  
         user.save(using=self._db)
         return user
 

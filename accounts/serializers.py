@@ -18,11 +18,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
                 field.required = False
 
     def create(self, validated_data):
-        import bcrypt
-        password = validated_data.pop('password')
-        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        validated_data['password'] = hashed.decode('utf-8')
-        return super().create(validated_data)
+        return User.objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
         import bcrypt

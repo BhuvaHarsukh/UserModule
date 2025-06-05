@@ -28,14 +28,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
-        raw_password = data.get('password')
-
-        if not raw_password:
-            return Response({"detail": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Encrypt password
-        hashed = bcrypt.hashpw(raw_password.encode(), bcrypt.gensalt()).decode()
-        data['password'] = hashed
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
@@ -53,7 +45,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class UserLoginView(APIView):
-    permission_classes = []  # Allow any to login
 
     def post(self, request):
         cell_number = request.data.get('cell_number')
@@ -67,12 +58,11 @@ class UserLoginView(APIView):
         except User.DoesNotExist:
             return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        if not user.check_password(password):
             return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Generate token
         token = secrets.token_urlsafe(64)
-        ttl = 30000000000000  # example ttl in ms
+        ttl = 30000000000000  
 
         AccessToken.objects.create(
             token=token,
